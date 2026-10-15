@@ -16,8 +16,13 @@ export const RoleSchema = z.object({
   systemPrompt: z.union([z.string(), z.array(z.string())]).default(""),
   // tool ของ Pi ที่ห้ามใช้ เช่น ["edit", "write"]
   denyTools: z.array(z.string()).default([]),
+  // ข้อยกเว้นของ denyTools สำหรับ write/edit: regex บน path เทียบกับ root ของ workspace
+  // เช่น ["^docs/adr/", "^CONTEXT\\.md$"] ถ้าระบุ write/edit จะยังมองเห็นแต่ใช้ได้เฉพาะ path เหล่านี้
+  allowWritePaths: z.array(z.string()).default([]),
   // bash: "full" ใช้ได้ทุกคำสั่ง, "readonly" ใช้ได้เฉพาะคำสั่งอ่าน (และ `paseo ...`)
   bash: z.enum(["full", "readonly"]).default("full"),
+  // ข้อยกเว้นของ bash readonly: regex บนคำสั่งเต็ม เช่น ["^git (merge|switch)\\b"]
+  allowCommands: z.array(z.string()).default([]),
 });
 
 export const RolesConfigSchema = z.object({
@@ -62,6 +67,8 @@ export function envOf(role: Role): Record<string, string> {
     PASEO_ROLE: role.name,
     PASEO_ROLE_DENY_TOOLS: role.denyTools.join(","),
     PASEO_ROLE_BASH: role.bash,
+    PASEO_ROLE_ALLOW_WRITE_PATHS: JSON.stringify(role.allowWritePaths),
+    PASEO_ROLE_ALLOW_COMMANDS: JSON.stringify(role.allowCommands),
   };
 }
 

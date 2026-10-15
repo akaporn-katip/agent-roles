@@ -59,6 +59,12 @@ export function RolesSurface({ theme, layout }: PluginSurfaceProps) {
           <Text style={styles.line}>
             deny tools: {role.denyTools.length > 0 ? role.denyTools.join(", ") : "none"} · bash: {role.bash}
           </Text>
+          {role.allowWritePaths.length > 0 && (
+            <Text style={styles.line}>may still write: {role.allowWritePaths.join(", ")}</Text>
+          )}
+          {role.allowCommands.length > 0 && (
+            <Text style={styles.line}>may still run: {role.allowCommands.join(", ")}</Text>
+          )}
           <Text style={styles.prompt}>
             {(Array.isArray(role.systemPrompt) ? role.systemPrompt.join("\n") : role.systemPrompt) ||
               "(no system prompt)"}

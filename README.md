@@ -36,6 +36,19 @@ Paseo ไม่บอก plugin ว่า agent ถูกสร้างจา�
 ถ้าสอง profile ใช้ model เดียวกัน ให้แยกด้วย title แทน (ตั้งชื่อ agent ขึ้นต้นด้วย "Planner")
 หรือใช้ `cwd` แยก main checkout กับ worktree เช่น `"cwd": "\\.paseo/worktrees/"` สำหรับ coder
 
+## ข้อยกเว้นของ Role
+
+การห้ามเป็นเชิงกลไก system prompt จึงปลดล็อกอะไรไม่ได้ ถ้าอยากให้ orchestrator ทำบางอย่างได้ ต้องเปิดที่กฎ
+
+| ฟิลด์ | ความหมาย | ตัวอย่าง |
+| --- | --- | --- |
+| `allowWritePaths` | regex บน path (เทียบกับ root ของ workspace) ที่ `write`/`edit` ยังใช้ได้แม้อยู่ใน `denyTools` นอก workspace ไม่ให้เสมอ | `["^docs/", "^CONTEXT\\.md$"]` ให้เขียน ADR และ glossary ได้ |
+| `allowCommands` | regex บนคำสั่ง bash ที่ผ่านได้แม้ `bash` เป็น `readonly` | `["^git (merge|switch|checkout)\\b"]` ให้ merge งานที่ review แล้ว |
+
+เมื่อมี `allowWritePaths` tool `write`/`edit` จะยังอยู่ในรายการที่โมเดลเห็น แต่ถูกคัดต่อการเรียก
+MCP tool (เช่น Linear) ไม่ถูกแตะอยู่แล้ว ถ้าอยากห้ามให้ใส่ชื่อลง `denyTools`
+ควรเขียนขอบเขตเดียวกันไว้ใน `systemPrompt` ด้วย เพื่อให้โมเดลรู้โดยไม่ต้องลองผิด
+
 ## กลไก
 
 1. Paseo เรียก hook `agent.create` → plugin ต่อ system prompt ของ Role เข้า config และตั้ง env
