@@ -1,0 +1,6 @@
+{
+  "id": "agent-roles",
+  "requirements": {
+    "paseo": ">=0.10.0"
+  }
+}
